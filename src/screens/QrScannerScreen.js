@@ -7,40 +7,46 @@ import { scan } from '../redux/qrCode/qrCode.action'
 
 let scanner
 
-const QrScannerScreen = ({ currentValue, historyLogs, goHome, scan }) => (
+const QrScannerScreen = ({ currentValue, goHome, scan }) => (
   <View style={{ flex: 1 }}>
-    <View>
-      <TouchableOpacity onPress={goHome}>
-        <Text>Go Home</Text>
-      </TouchableOpacity>
-      <Text>{currentValue}</Text>
-    </View>
-    <QRCodeScanner
-      ref={node => scanner = node}
-      onRead={e => {
-        console.log(e)
-        scan(e.data)
-      }}
-      // topContent={
-      //   <Text>Scan your the QR code.</Text>
-      // }
-      bottomContent={
-        <TouchableOpacity onPress={() => scanner.reactivate()}>
-          <Text>Scan new one</Text>
-        </TouchableOpacity>
-      }
-    />
+  <QRCodeScanner
+    ref={node => scanner = node}
+    onRead={e => {
+      scan(e.data)
+      // goHome()
+    }}
+    showMarker={true}
+    bottomViewStyle={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start' }}
+    topViewStyle={{ maxHeight: 40 }}
+    topContent={<Text>Scan your the QR code.</Text>}
+    bottomContent={
+      <View style={{ flex: 1, padding: 15 }}>
+        <Text>Data: {currentValue}</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <TouchableOpacity
+            style={{ backgroundColor: '#ccc', justifyContent: 'center', alignItems: 'center', padding: 15 }}
+            onPress={() => scanner.reactivate()}>
+            <Text>Re-scan</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{ backgroundColor: '#0b0', justifyContent: 'center', alignItems: 'center', padding: 15 }}
+            onPress={goHome}>
+            <Text>OK</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    }
+  />
   </View>
 )
 
 const mapStateToProps = (state) => ({
-  currentValue: state.qrCode.currentValue,
-  historyLogs: state.qrCode.historyLogs
+  currentValue: state.qrCode.currentValue
 })
 
 const mapDispatchToProps = (dispatch) => ({
   goHome() {
-    dispatch(NavigationActions.navigate({ routeName: 'Home' }))
+    dispatch(NavigationActions.back())
   },
   scan(value) {
     dispatch(scan(value))
